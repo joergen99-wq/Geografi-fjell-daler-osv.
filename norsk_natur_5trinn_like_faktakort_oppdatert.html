@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="nn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Norsk natur – 5. trinn</title>
+  <style>
+    :root{
+      --bg:#0b1220; --ink:#e8eefc; --muted:#a8b4d6; --card:#0f1a31;
+      --accent:#7cc4ff; --accent2:#a9ffde; --radius:18px;
+      --good:#a9ffde; --warn:#ffd27c; --bad:#ff9aa2;
+    }
+    *{ box-sizing:border-box }
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 500px at 80% -10%, rgba(124,196,255,.12), transparent),
+        radial-gradient(900px 500px at -10% 80%, rgba(169,255,222,.08), transparent),
+        var(--bg);
+      color:var(--ink);
+      font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial;
+    }
+    header{ padding:20px clamp(16px,4vw,32px); display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap }
+    .brand{ display:flex; gap:12px; align-items:center }
+    .logo{ width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:grid; place-items:center; color:#0a1020; font-size:24px; box-shadow:0 10px 30px rgba(124,196,255,.35) }
+    h1{ margin:0; font-size:clamp(18px,3.4vw,28px) }
+    .wrap{ display:grid; grid-template-columns:330px 1fr; gap:18px; padding:0 clamp(16px,4vw,32px) 24px }
+    @media (max-width: 980px){ .wrap{ grid-template-columns:1fr } }
+    .panel{ position:sticky; top:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:14px; backdrop-filter: blur(6px) }
+    .panel h2{ margin:.2rem 0 .6rem; font-size:18px }
+    .field{ display:grid; gap:6px; margin:10px 0 }
+    label{ font-weight:600 }
+    input[type="text"]{ background:#0e172a; color:var(--ink); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:10px 12px; outline:none }
+    .badges{ display:flex; flex-wrap:wrap; gap:10px }
+    .badge{ font-size:14px; padding:10px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.15); cursor:pointer; background:rgba(255,255,255,.03) }
+    .badge:hover{ border-color:rgba(124,196,255,.6) }
+    .badge.active{ background:rgba(124,196,255,.18); border-color:rgba(124,196,255,.7) }
+    .legend{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; font-size:12px; color:var(--muted) }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:14px }
+    .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:0; overflow:hidden }
+    .imgwrap{ position:relative; background:#0c1427; padding:8px }
+    .imgwrap img{
+      display:block; width:100%; height:auto;
+      max-height:340px; object-fit:contain; background:#0a1122; border-radius:12px;
+    }
+    .credit{ position:absolute; right:12px; bottom:12px; font-size:10px; background:rgba(0,0,0,.55); padding:2px 6px; border-radius:8px; color:#eee }
+    .card .body{ padding:12px }
+    .top{ display:flex; gap:12px; align-items:flex-start }
+    .emoji{ font-size:24px; flex:0 0 auto }
+    .card h3{ margin:0 0 2px; font-size:18px }
+    .card p{ margin:0; color:var(--muted); font-size:13px; min-height:2.6em }
+    .chips{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px }
+    .chip{ font-size:11px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.06); color:var(--muted) }
+    .facts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-top:10px }
+    .tile{ background:#0f1930; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px }
+    .tile b{ display:block; font-size:12px; color:#cbd5ff }
+
+    .btn{ all:unset; display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; cursor:pointer; background:linear-gradient(135deg, rgba(124,196,255,.22), rgba(169,255,222,.18)); border:1px solid rgba(124,196,255,.4) }
+    .line{ height:1px; background:rgba(255,255,255,.08); margin:12px 0 }
+    .quiz{ margin-top:18px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px }
+    .q{ margin-bottom:12px; }
+    .q h4{ margin:.2em 0; }
+    .answers{ display:grid; gap:8px; margin-top:6px }
+    .ans{ background:#0e172a; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:10px; cursor:pointer }
+    .ans.correct{ outline:2px solid var(--good) }
+    .ans.wrong{ outline:2px solid var(--bad) }
+    .score{ margin-top:8px; color:var(--muted) }
+
+    .empty{ padding:12px; color:var(--muted) }
+    .hint{ font-size:13px; color:var(--muted); margin-top:4px }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">🏔️</div>
+      <div>
+        <h1>Norsk natur – fjell, elvar, dalar og meir</h1>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="btn" id="back">↩️ Tilbake</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <aside class="panel">
+      <h2>Kategori</h2>
+      <div class="badges" id="quick">
+        <span class="badge" data-type="Fjell">🏔️ Fjell</span>
+        <span class="badge" data-type="Elv">🏞️ Elv</span>
+        <span class="badge" data-type="Dal">⛰️ Dal</span>
+        <span class="badge" data-type="Fjord">🌊 Fjord</span>
+        <span class="badge" data-type="Innsjø">🛶 Innsjø</span>
+        <span class="badge" data-type="Isbre">🧊 Isbre</span>
+      </div>
+
+      <div class="field">
+        <label for="q">Søk i vald kategori</label>
+        <input id="q" type="text" placeholder="t.d. Galdhøpiggen, Glomma, Mjøsa…" disabled />
+        <div class="hint" id="hint">Vel ein kategori over for å starte søk.</div>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="quiz">
+        <h2>Mini-quiz</h2>
+        <div class="q" data-correct="b">
+          <h4>1) Kva er den lengste elva i Noreg?</h4>
+          <div class="answers">
+            <div class="ans" data-id="a">Lågen</div>
+            <div class="ans" data-id="b">Glomma</div>
+            <div class="ans" data-id="c">Nidelva</div>
+          </div>
+        </div>
+        <div class="q" data-correct="c">
+          <h4>2) Kva heiter Noregs høgaste fjell?</h4>
+          <div class="answers">
+            <div class="ans" data-id="a">Gaustatoppen</div>
+            <div class="ans" data-id="b">Glittertind</div>
+            <div class="ans" data-id="c">Galdhøpiggen</div>
+          </div>
+        </div>
+        <div class="q" data-correct="a">
+          <h4>3) Kva for dal er knytt til Lågen i Innlandet?</h4>
+          <div class="answers">
+            <div class="ans" data-id="a">Gudbrandsdalen</div>
+            <div class="ans" data-id="b">Setesdalen</div>
+            <div class="ans" data-id="c">Hallingdal</div>
+          </div>
+        </div>
+        <div class="q" data-correct="b">
+          <h4>4) Kva er den største innsjøen i Noreg?</h4>
+          <div class="answers">
+            <div class="ans" data-id="a">Røssvatnet</div>
+            <div class="ans" data-id="b">Mjøsa</div>
+            <div class="ans" data-id="c">Femunden</div>
+          </div>
+        </div>
+        <!-- NEW Q5 -->
+        <div class="q" data-correct="b">
+          <h4>5) Kva heiter den lengste fjorden i Noreg?</h4>
+          <div class="answers">
+            <div class="ans" data-id="a">Hardangerfjorden</div>
+            <div class="ans" data-id="b">Sognefjorden</div>
+            <div class="ans" data-id="c">Trondheimsfjorden</div>
+          </div>
+        </div>
+        <div class="score" id="score">Poeng: 0/5</div>
+      </div>
+    </aside>
+
+    <section>
+      <div id="grid" class="grid" aria-live="polite"></div>
+      <div id="empty" class="empty">👋 Vel ein kategori til venstre for å sjå kort.</div>
+    </section>
+  </main>
+
+  <script>
+    const img = (file) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=1400`;
+
+    const SCHEMAS = {
+      "Fjell":[
+        ["Høgd","height"],["Område","region"],["Nær stad","near"],
+        ["Terreng","terrain"],["Tryggleik","safety"],["Fun fact","fun"]
+      ],
+      "Dal":[
+        ["Elv","river"],["Landskap","landscape"],["Kjende stader","towns"],
+        ["Reiseveg","travel"],["Kultur/historie","history"],["Tryggleik","safety"]
+      ],
+      "Elv":[
+        ["Lengd","length"],["Kjelde","source"],["Utløp","mouth"],
+        ["Bruk i dag","use"],["Fisk/natur","fish"],["Tryggleik","safety"]
+      ],
+      "Fjord":[
+        ["Lengd","length"],["Djupn","depth"],["Kor laga?","made"],
+        ["Kjende stader","towns"],["Aktivitet","activity"],["Tryggleik","safety"]
+      ],
+      "Innsjø":[
+        ["Areal","area"],["Djupn","depth"],["Kjende stader","towns"],
+        ["Bruk","use"],["Fisk","fish"],["Tryggleik","safety"]
+      ],
+      "Isbre":[
+        ["Areal","area"],["I nasjonalpark?","park"],["Nær stad","near"],
+        ["Kor laga?","made"],["Tryggleik","safety"],["Fun fact","fun"]
+      ]
+    };
+
+    const places = [
+      {emoji:"🏔️", type:"Fjell", name:"Galdhøpiggen", county:"Innlandet", img: img("Galdhopiggen 2004.jpg"),
+        height:"2469 moh", region:"Jotunheimen", near:"Lom",
+        terrain:"Stein og snø", safety:"Veret kan endre seg fort – hald saman", fun:"Noregs høgaste fjell"},
+      {emoji:"🏔️", type:"Fjell", name:"Glittertind", county:"Innlandet", img: img("Glittertind 2006.jpg"),
+        height:"ca. 2452 moh", region:"Jotunheimen", near:"Spiterstulen",
+        terrain:"Stein og snø", safety:"Is/snø krev gode sko", fun:"Toppen kan vere høgare når snøen er djup"},
+      {emoji:"⛰️", type:"Fjell", name:"Gaustatoppen", county:"Telemark", img: img("Gaustatoppen, Telemark 2012.jpg"),
+        height:"1883 moh", region:"Telemark", near:"Rjukan",
+        terrain:"Steinur og stig", safety:"Pass på i steinuren", fun:"Heis inne i fjellet (Gaustabanen)"},
+      {emoji:"⛰️", type:"Fjell", name:"Snøhetta", county:"Innlandet/Møre og Romsdal", img: img("Snohetta.jpg"),
+        height:"2286 moh", region:"Dovrefjell", near:"Snøheim",
+        terrain:"Stein og snøflekker", safety:"Hald avstand til moskus", fun:"Utsikt mot mange fjellområde"},
+      {emoji:"🏞️", type:"Dal", name:"Gudbrandsdalen", county:"Innlandet", img: img("Gudbrandsdalen fra Tretten.JPG"),
+        river:"Gudbrandsdalslågen", landscape:"Breid dal, åkrar", towns:"Lillehammer, Vinstra, Otta",
+        travel:"E6 og tog", history:"Nemnd i soger", safety:"Flom kan skje ved snøsmelting"},
+      {emoji:"🏞️", type:"Dal", name:"Setesdalen", county:"Agder", img: img("Landscape Setesdal - 2 (2705360655).jpg"),
+        river:"Otra", landscape:"Furu og svaberg", towns:"Evje, Valle, Bykle",
+        travel:"Rv9", history:"Musikk og drakter", safety:"Sterk straum nokre stader"},
+      {emoji:"🏞️", type:"Dal", name:"Hallingdal", county:"Buskerud/Viken",
+        img: img("Hallingdalselva, Nesbyen 02.jpg"),
+        river:"Hallingdalselva", landscape:"Fjellbjørk og åsar", towns:"Geilo, Gol, Ål",
+        travel:"Rv7 og tog", history:"Mye turisme", safety:"Kald elv – bad berre på trygge stader"},
+      {emoji:"🌊", type:"Elv", name:"Glomma", county:"Innlandet/Viken/Østfold", img: img("Glomma gjennom Odalen.JPG"),
+        length:"ca. 600 km", source:"Aursunden", mouth:"Oslofjorden (Fredrikstad)",
+        use:"Vasskraft og friluftsliv", fish:"Laks/aure i sideelvar", safety:"Sterk straum – hald avstand"},
+      {emoji:"🌊", type:"Elv", name:"Numedalslågen", county:"Buskerud/Vestfold", img: img("Numedalslågen.jpg"),
+        length:"ca. 352 km", source:"Hardangervidda", mouth:"Larvik",
+        use:"Fiske og padling nokre stader", fish:"Kjent for laks", safety:"Stryk – bruk vest"},
+      {emoji:"🌊", type:"Elv", name:"Nidelva (Agder)", county:"Agder", img: img("Arendal-Nidelva-a.JPG"),
+        length:"ca. 210 km", source:"Nisserområdet", mouth:"Arendal",
+        use:"Kraftverk og båtliv", fish:"Aure og abbor m.m.", safety:"Straum/kanalar – ver varsam"},
+      {emoji:"🌊", type:"Fjord", name:"Sognefjorden", county:"Vestland", img: img("Sognefjorden sett frå Skjersnes.jpg"),
+        length:"ca. 204 km", depth:">1300 m", made:"Isbrear grov ut dalen", towns:"Flåm, Balestrand",
+        activity:"Båttur og togtur (Flåmsbana)", safety:"Bratte sider – hald avstand ved stup"},
+      {emoji:"🌊", type:"Fjord", name:"Hardangerfjorden", county:"Vestland", img: img("Hovland Hardangerfjorden Norway.JPG"),
+        length:"ca. 179 km", depth:"—", made:"Is og vatn forma landskapet", towns:"Odda, Jondal",
+        activity:"Sjå fruktbløming", safety:"I fjellet rundt: skredfare om vinteren"},
+      {emoji:"🌊", type:"Fjord", name:"Nordfjorden", county:"Vestland", img: img("Panorama of Nordfjord.jpg"),
+        length:"ca. 106 km", depth:"—", made:"Isbrear i istida", towns:"Stryn, Loen",
+        activity:"Loen Skylift", safety:"Kraftig vind kan komme fort"},
+      {emoji:"🛶", type:"Innsjø", name:"Mjøsa", county:"Innlandet/Viken", img: img("Mjøsa 1.jpg"),
+        area:"ca. 365 km²", depth:"ned mot 449 m", towns:"Hamar, Gjøvik, Lillehammer",
+        use:"Bading og båt", fish:"Mjøsørret m.m.", safety:"Djup og kald – bruk vest"},
+      {emoji:"🛶", type:"Innsjø", name:"Røssvatnet", county:"Nordland", img: img("Røssvatnet 20060809 DSCN1927.jpg"),
+        area:"ca. 219 km²", depth:"—", towns:"Hattfjelldal/Hemnes",
+        use:"Fiske og tur", fish:"Aure m.m.", safety:"Ujamn is om våren"},
+      {emoji:"🛶", type:"Innsjø", name:"Femunden", county:"Innlandet/Trøndelag", img: img("Femund-See.JPG"),
+        area:"ca. 203 km²", depth:"—", towns:"Røros-området",
+        use:"Kano og telttur", fish:"Røye og aure", safety:"Vind kan lage store bølgjer"},
+      {emoji:"🧊", type:"Isbre", name:"Jostedalsbreen", county:"Vestland", img: img("Briksdalsbreen.JPG"),
+        area:"ca. 487 km²", park:"Ja", near:"Stryn/Loen",
+        made:"Snø pressa til is", safety:"Hald avstand til brefronten", fun:"Mange armar (t.d. Briksdalsbreen)"},
+      {emoji:"🧊", type:"Isbre", name:"Folgefonna", county:"Vestland", img: img("Folgefonna.jpg"),
+        area:"ca. 207 km²", park:"Ja", near:"Odda/Jondal",
+        made:"Snø som ikkje smeltar", safety:"Gå berre med guide", fun:"Smeltevatn gir grøne elvar"}
+    ];
+
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const q = document.getElementById('q');
+    const quick = document.getElementById('quick');
+    const backBtn = document.getElementById('back');
+    const hint = document.getElementById('hint');
+
+    let activeType = '';
+
+    function makeFacts(a){
+      const schema = SCHEMAS[a.type] || [];
+      const tiles = schema.map(([label,key])=>{
+        let val = (a[key] ?? "").toString().trim();
+        if(!val) val = "—";
+        return `<div class="tile"><b>${label}</b>${val}</div>`;
+      });
+      return `<div class="facts">${tiles.join("")}</div>`;
+    }
+
+    function makeCard(a){
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="imgwrap">
+          <img alt="Bilete av ${a.name}" loading="lazy" src="${a.img || ''}"/>
+          <div class="credit">${a.credit || 'Wikimedia Commons'}</div>
+        </div>
+        <div class="body">
+          <div class="top">
+            <div class="emoji">${a.emoji}</div>
+            <div>
+              <h3>${a.name}</h3>
+              <p>${a.desc || ''}</p>
+              <div class="chips">
+                <span class="chip">Type: ${a.type}</span>
+                <span class="chip">Fylke: ${a.county}</span>
+              </div>
+            </div>
+          </div>
+          ${makeFacts(a)}
+        </div>
+      `;
+      return el;
+    }
+
+    function render(items){
+      grid.innerHTML = '';
+      if(items.length===0){
+        empty.textContent = activeType ? 'Ingen treff – prøv eit anna søk.' : '👋 Vel ein kategori til venstre for å sjå kort.';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      for(const a of items){ grid.appendChild(makeCard(a)); }
+    }
+
+    function filter(){
+      const text = q.value.trim().toLowerCase();
+      const out = places.filter(a=>{
+        if(activeType && a.type !== activeType) return false;
+        const hay = (a.name + ' ' + (a.desc||'') + ' ' + a.county).toLowerCase();
+        return !text || hay.includes(text);
+      });
+      render(out);
+    }
+
+    quick.addEventListener('click', (e)=>{
+      const badge = e.target.closest('.badge');
+      if(!badge) return;
+      document.querySelectorAll('.badge').forEach(b=>b.classList.remove('active'));
+      badge.classList.add('active');
+      activeType = badge.dataset.type;
+      q.disabled = false;
+      hint.textContent = 'Søk etter namn i vald kategori.';
+      q.value = '';
+      filter();
+    });
+
+    q.addEventListener('input', filter);
+
+    backBtn.addEventListener('click', ()=>{
+      activeType = '';
+      q.value = '';
+      q.disabled = true;
+      hint.textContent = 'Vel ein kategori over for å starte søk.';
+      document.querySelectorAll('.badge').forEach(b=>b.classList.remove('active'));
+      render([]);
+    });
+
+    // Start
+    render([]);
+
+    // Quiz logic
+    const qs = [...document.querySelectorAll('.q')];
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+    qs.forEach(qnode=>{
+      const correct = qnode.dataset.correct;
+      qnode.querySelectorAll('.ans').forEach(ans=>{
+        ans.addEventListener('click', ()=>{
+          if(qnode.dataset.locked) return;
+          qnode.dataset.locked = '1';
+          const id = ans.dataset.id;
+          if(id===correct){
+            ans.classList.add('correct');
+            score++;
+          }else{
+            ans.classList.add('wrong');
+            const right = qnode.querySelector(`.ans[data-id="${correct}"]`);
+            if(right) right.classList.add('correct');
+          }
+          scoreEl.textContent = `Poeng: ${score}/${qs.length}`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
